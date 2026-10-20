@@ -1,0 +1,51 @@
+local player = game.Players.LocalPlayer
+local mouse = player:GetMouse()
+local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+screenGui.Name = "NTN_RadialMenu"
+local mainFrame = Instance.new("Frame", screenGui)
+mainFrame.Size = UDim2.new(0, 300, 0, 300)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -150)
+mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+mainFrame.BorderSizePixel = 0
+local UICorner = Instance.new("UICorner", mainFrame)
+UICorner.CornerRadius = UDim.new(0.5, 0) -- Tạo hình tròn
+-- Kéo thả menu (Draggable)
+local dragging, dragInput, dragStart, startPos
+mainFrame.InputBegan:Connect(function(input)
+if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+dragging = true
+dragStart = input.Position
+startPos = mainFrame.Position
+end
+end)
+mainFrame.InputChanged:Connect(function(input)
+if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+dragInput = input
+end
+end)
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+if input == dragInput and dragging then
+local delta = input.Position - dragStart
+mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+end)
+game:GetService("UserInputService").InputEnded:Connect(function(input)
+if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+dragging = false
+dragInput = nil
+end
+end)
+-- 3. Tạo các nút (Các tính năng) nằm trên đường tròn
+local buttons = {
+{Name = "Kẻ địch (ESP)", Action = "esp"},
+{Name = "Aim Kẻ địch", Action = "aimbot"},
+{Name = "Tốc độ & Nhảy (Max)", Action = "speed_jump"},
+{Name = "Bay (Max:120)", Action = "fly"},
+{Name = "Auto Quest", Action = "autoquest"},
+{Name = "Auto Farm", Action = "autofarm"},
+{Name = "Auto Click", Action = "autoclick"},
+{Name = "Tự nhặt đồ", Action = "autopick"},
+}
+local radius = 110
+local numButtons = #buttons
+for i, btnInfo in ipairs(buttons) do
